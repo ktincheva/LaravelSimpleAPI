@@ -1,0 +1,8 @@
+php artisan make:migration create_candidates_table --create=candidates
+php artisan make:migration create_joboffers_table --create=joboffers
+php artisan make:migration create_applications_table --create=applications
+
+
+php artisan controller:make CandidatesController --only=index,store,destroy
+php artisan controller:make JobOffersController --only=index,store,destroy
+php artisan controller:make ApplicationsController --only=index,store,destroy
