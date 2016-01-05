@@ -16,7 +16,7 @@ class JoboffersController extends Controller {
 	 */
 	public function index()
 	{
-		return response()->json(Joboffers::get());
+		return response()->json(Joboffers::with("experience")->get());
 	}
 
 	/**

@@ -18,7 +18,9 @@ class CandidatesController extends Controller {
      * @return Response
      */
     public function index() {
-        return response()->json(User::getCandidates());
+        $candidates = Candidates::with("user", "experience")->get();
+        // shoud thake from candidates 
+        return response()->json($candidates);
     }
 
     /**

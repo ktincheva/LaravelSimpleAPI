@@ -39,7 +39,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     }
 
     public function scopeGetCandidates($query) {
-         return $query->where('role', '=', 0);
+         return $query->where('candidates.role', '=', 1);
     }
 
 }

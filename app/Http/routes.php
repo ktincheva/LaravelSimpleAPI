@@ -45,4 +45,3 @@ Route::group(array('prefix' => 'api'), function() {
         Route::post('login','CandidatesController@login');
         
 });
-
