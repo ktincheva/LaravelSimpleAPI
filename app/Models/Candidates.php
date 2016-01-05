@@ -7,4 +7,6 @@ class Candidates extends Model {
 	//
     protected $table = 'candidates';
     protected $fillable = array('name', 'experience');	
+    
+    
 }

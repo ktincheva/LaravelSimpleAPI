@@ -42,6 +42,7 @@ Route::group(array('prefix' => 'api'), function() {
         Route::resource('joboffers', 'JoboffersController');
         Route::resource('experience', 'ExperienceController',
                 ['only' => ['index']]);
+        Route::post('login','CandidatesController@login');
         
 });
 
