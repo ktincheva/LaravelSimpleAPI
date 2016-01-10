@@ -35,11 +35,14 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     protected $hidden = ['password', 'remember_token'];
 
     public function candidate() {
-        return $this->hasOne('App\Models\Candidates');
+        return $this->hasOne('App\Models\Candidates', 'userid','id');
     }
 
     public function scopeGetCandidates($query) {
-         return $query->where('candidates.role', '=', 1);
+         return $query->where('role', '=', 1);
     }
-
+    
+    public function scopeGetCandidate($query) {
+         return $query->where('role', '=', 1);
+    }
 }

@@ -6,7 +6,7 @@ class Candidates extends Model {
 
 	//
     protected $table = 'candidates';
-    protected $fillable = array('name', 'experience');	
+    protected $fillable = array('name', 'experienceid');	
     
      public function experience() {
         return $this->hasOne('App\Models\Experience', 'id', 'experienceid');
@@ -18,5 +18,12 @@ class Candidates extends Model {
     public function scopeGetCandidates($query) {
          return $query->where('role', '=', 1);
     }
+    
+    public function applications()
+    {
+        return $this->hasMany('App\Models\Applications', 'id', 'candidateid');
+    }
+    
+    
     
 }

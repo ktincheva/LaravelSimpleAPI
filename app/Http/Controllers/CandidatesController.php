@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\User;
 use App\Models\Candidates;
+use App\Models\Applications;
+use App\Models\Experience;
 
 class CandidatesController extends Controller {
 
@@ -18,7 +20,9 @@ class CandidatesController extends Controller {
      * @return Response
      */
     public function index() {
-        $candidates = Candidates::with("user", "experience")->get();
+        $candidates = Candidates::with("user", "experience")->whereHas('user', function ($q) {
+                    $q->where('role', 1);
+                })->get();
         // shoud thake from candidates 
         return response()->json($candidates);
     }
@@ -38,7 +42,9 @@ class CandidatesController extends Controller {
      * @return Respo
      */
     public function store(Request $request) {
-
+        if ($request->input('id')) {
+            $this->update($request);
+        }
         $user = User::where('email', '=', $request->input('email'))->first();
         if (is_object($user)) {
             return response()->json(array('success' => false));
@@ -49,9 +55,10 @@ class CandidatesController extends Controller {
             $user->password = hash('md5', $request->input('password'));
             $user->role = 1;
             $user->save();
-            $candidate = New Candidates(['experienceid' => $request->input('experienceid')]);
+            $candidate = New Candidates();
+            $candidate->experienceid = $request->input('experienceid');
             $user->candidate()->save($candidate);
-             return response()->json(array('success' => true, 'data' => $user));
+            return response()->json(array('success' => true, 'data' => $user));
         }
         //$user->candidate()->associate($candidate);
         //  } else {
@@ -65,7 +72,7 @@ class CandidatesController extends Controller {
      * @return Response
      */
     public function show($id) {
-        return response()->json(Candidates::find($id));
+        return response()->json(User::with("candidate")->find($id));
     }
 
     /**
@@ -84,11 +91,11 @@ class CandidatesController extends Controller {
      * @param  int  $id
      * @return Response
      */
-    public function update($id) {
-
-        $candidate = Candidates::find($id);
+    public function update(Request $request) {
+        $candidate = User::with("candidate")->find($request->input('id'));
         $candidate->name = $request->input('name');
-        $candidate->expirience_id = $request->input('experienceid');
+        $candidate->candidate->experienceid = $request->input('candidate.experienceid');
+        $candidate->candidate->save();
         $candidate->save();
         return response()->json(array('success' => true));
     }
@@ -100,16 +107,28 @@ class CandidatesController extends Controller {
      * @return Response
      */
     public function destroy($id) {
-        Candidates::destroy($id);
+        User::destroy($id);
         return response()->json(array('success' => true));
     }
-    public function login(Request $request)
-    {
-        $user = User::where('email', '=', $request->input('email'))->where("password", '=', hash('md5',$request->input('password')))->first();
-        if (is_object($user)) return response()->json(array('success' => true, 'data' => ["user"=>$user]));
+
+    public function login(Request $request) {
+        $user = User::where('email', '=', $request->input('email'))->where("password", '=', hash('md5', $request->input('password')))->first();
+        if (is_object($user))
+            return response()->json(array('success' => true, 'data' => ["user" => $user]));
         else {
-          return response()->json(array('success' => false));  
+            return response()->json(array('success' => false));
         }
+    }
+
+    public function apply(Request $request) {
+        $application = Applications::where('joboffersid', '=', $request->input('jobid'))->where('candidateid', '=', $request->input('id'))->first();
+
+        if (!is_object($application))
+            $application = new Applications();
+        $application->joboffersid = $request->input('jobid');
+        $application->candidateid = $request->input('id');
+        $application->save();
+        return response()->json(['success' => true]);
     }
 
 }
